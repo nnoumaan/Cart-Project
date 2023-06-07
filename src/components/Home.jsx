@@ -35,7 +35,8 @@ const Home = () => {
     
    
     disptach({type:'addToCart',payload:options})
-  
+    disptach({type:'totalCalculate',payload:options.id})
+
 
     toast.success("Added to Cart");
 
@@ -75,7 +76,10 @@ const ProductCard = function ({ name, imgSrc, price, handler, id }) {
       <h4>{price}</h4>
       <button
         onClick={() => {
-          handler({ name, price, quantity: 1, id, imgSrc });
+          handler({ name, price, quantity: 1, id, imgSrc })
+         
+          
+          ;
         }}
       >
         Add to Cart

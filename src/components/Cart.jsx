@@ -24,6 +24,8 @@ const Cart = () => {
        /> 
        )
        )):(<h1>No Item Yet</h1>)}
+
+       
       </main>
 
       {/* {
@@ -82,16 +84,19 @@ const CartItem = ({
     <div>
       <button
         onClick={() => {
-          disptach({type:'decrement',payload:id})
+          disptach({type:'decrement',payload:{id:id,myAction:'decrement'}})
+          disptach({type:'totalCalculate'})
         }}
       >
         -
       </button>
-      <p>{cartItem.map(i=>i.id === id ? i.quantity : ''  )}</p>
+      <p>{cartItem.map(i=>i.id === id ? i.quantity : '')}</p>
       <button
         onClick={() => {
           
-          disptach({type:'increment',payload:id})
+          disptach({type:'addToCart',payload:{id}})
+          disptach({type:'totalCalculate'})
+
         }}
       >
         +
@@ -100,7 +105,9 @@ const CartItem = ({
     </div>
     <AiFillDelete
         onClick={() => {
-          disptach({type:'delete',payload:id});
+          disptach({type:'decrement',payload:{id:id,myAction:'delete'}});
+          disptach({type:'totalCalculate'})
+
         }}
       />
   </div>

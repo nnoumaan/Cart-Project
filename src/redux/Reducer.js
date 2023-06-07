@@ -18,75 +18,56 @@ export const cartReducer = createReducer(
   },
   {
     addToCart: (state, action) => {
-      const item = action.payload;
-      const isItemExist = state.cartItem.find((i) => i.id === item.id);
-      state.subtotal += item.price;
-      state.tax = (state.subtotal / 100) * 10;
-
+      const newItem = action.payload;
+      const isItemExist = state.cartItem.find((i) => i.id === newItem.id);
       if (isItemExist) {
         state.cartItem.forEach((i) => {
-          if (i.id === item.id) {
-            i.quantity += 1;
-            // state.subtotal += item.price
-            state.total = state.shipping + state.subtotal + state.tax;
+          if (i.id === newItem.id) {
+            console.log(i.quantity);
+            i.quantity++;
           }
         });
       } else {
-        state.shipping += 40;
-        state.cartItem.push(item);
-        state.total = state.shipping + state.subtotal + state.tax;
+        state.cartItem.push(newItem);
       }
     },
 
-    increment: (state, action) => {
-      state.cartItem.map((i) => {
-        if (i.id === action.payload) {
-          i.quantity += 1;
-
-          state.subtotal += i.price;
-
-          state.tax = (state.subtotal / 100) * 10;
-          state.total = state.shipping + state.subtotal + state.tax;
-        }
-
-        // return i.quantity;
-      });
-    },
-
     decrement: (state, action) => {
-      state.cartItem.map((i) => {
-        console.log("runn");
-        if (i.id === action.payload && i.quantity > 0) {
-          i.quantity--;
+      state.cartItem.forEach((i) => {
+        if (i.id === action.payload.id && i.quantity >= 1) {
+          switch (action.payload.myAction) {
+            case "decrement":
+              i.quantity--;
+              break;
 
-          state.subtotal -= i.price;
+            case "delete":
+              i.quantity = 0;
+              // state.cartItem = state.cartItem.filter((item) => item != i);
 
-          state.tax = (state.subtotal / 100) * 10;
-          state.total = state.shipping + state.subtotal + state.tax;
+              break;
+              default:
+                break;
+          }
         }
 
-        if (i.quantity == 0) {
-          state.shipping -= 40;
-          state.cartItem.splice(state.cartItem.indexOf(i), 1);
-          state.total = state.shipping + state.subtotal + state.tax;
+        if (i.quantity <= 0) {
+          // i.quantity = 0;
+          state.cartItem = state.cartItem.filter((item) => item !== i);
+          return;
         }
       });
     },
 
-    delete: (state, action) => {
-      state.cartItem.map((i) => {
-        if (i.id === action.payload) {
-          state.subtotal -= i.price * i.quantity;
-          state.tax -= (i.price / 100) * 10 * i.quantity;
-          state.shipping -= 40;
-          state.total = state.shipping + state.subtotal + state.tax;
-          state.cartItem.splice(state.cartItem.indexOf(i), 1);
-
-          // delete state.cartItem[state.cartItem.indexOf(i)]
-        }
-
-        // console.log(state.cartItem.findIndex(i.id === action.payload))
+    totalCalculate: (state) => {
+      if (state.cartItem.length === 0) state.subtotal = 0;
+      let sum = 0;
+      state.cartItem.forEach((i) => {
+        sum += i.price * i.quantity;
+        state.subtotal = sum;
       });
+      state.tax = state.subtotal * 0.1;
+      state.shipping = state.cartItem.length * 40;
+      state.total = state.subtotal + state.shipping + state.tax;
     },
   }
 );
